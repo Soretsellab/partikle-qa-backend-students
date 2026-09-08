@@ -1,68 +1,67 @@
-# Parte 1: Respuestas Teóricas — Prueba Técnica Python (QA Backend)
+# Respuestas a las Preguntas Teóricas (Parte 1)
 
-Respuestas directas, claras y fundamentadas a las preguntas teóricas de la evaluación:
+Candidato: Samuel Ballesteros  
+Documento: 1118803077  
+Teléfono: 3104512230  
+
+A continuación comparto mis respuestas a las 5 preguntas teóricas de la prueba.
 
 ---
 
 ### 1. ¿Cuáles son los tipos de datos en Python?
 
-En Python, los tipos de datos básicos y más utilizados se dividen en:
+En mi día a día con Python suelo trabajar con estos tipos de datos principales:
 
-1. **Numéricos:**
-   - `int`: Números enteros (ej. `25`, `-5`).
-   - `float`: Números decimales (ej. `3.14`, `0.5`).
-   - `complex`: Números complejos (ej. `2 + 3j`).
-
-2. **Texto:**
-   - `str`: Cadenas de caracteres / texto (ej. `"Samuel Ballesteros"`).
-
-3. **Colecciones y Secuencias:**
-   - `list`: Listas ordenadas que se pueden modificar (ej. `[1, 2, 3]`).
-   - `tuple`: Tuplas ordenadas que no se pueden modificar (inmutables) (ej. `(10, 20)`).
-   - `dict`: Diccionarios de clave-valor (ej. `{"nombre": "Samuel", "edad": 24}`).
-   - `set`: Conjuntos de elementos únicos, sin duplicados ni orden fijo (ej. `{1, 2, 3}`).
-
-4. **Booleanos:**
-   - `bool`: Valores lógicos de verdad (`True` o `False`).
-
-5. **Nulo:**
-   - `None`: Representa la ausencia de valor.
+- Numéricos:
+  - int: números enteros (por ejemplo 24 o -5).
+  - float: números con decimales (por ejemplo 3.14).
+  - complex: números complejos (por ejemplo 2 + 3j).
+- Texto:
+  - str: cadenas de caracteres o texto (por ejemplo "Samuel Ballesteros").
+- Colecciones:
+  - list: listas ordenadas y modificables (por ejemplo [1, 2, 3]).
+  - tuple: tuplas ordenadas pero que no se pueden modificar una vez creadas (por ejemplo (10, 20)).
+  - dict: diccionarios con pares clave-valor (por ejemplo {"nombre": "Samuel", "edad": 24}).
+  - set: conjuntos de elementos únicos, sin orden ni duplicados.
+- Booleanos:
+  - bool: valores lógicos (True o False).
+- Nulo:
+  - None: representa la ausencia de un valor.
 
 ---
 
 ### 2. ¿Para qué se usan los índices negativos en las secuencias?
 
-Los índices negativos sirven para **acceder a los elementos de una lista, tupla o texto empezando a contar desde el final hacia el principio**, sin necesidad de calcular la longitud total de la secuencia.
+Los uso para acceder a los elementos de una lista, tupla o texto empezando a contar desde el final hacia adelante, sin necesidad de calcular cuántos elementos hay en total.
 
-- El índice `-1` es el **último** elemento.
-- El índice `-2` es el **penúltimo** elemento.
+El índice -1 me devuelve el último elemento y el -2 el penúltimo.
 
-**Ejemplo sencillo:**
+Ejemplo:
+
 ```python
 alumnos = ["Carlos", "María", "Samuel"]
 
-print(alumnos[-1])   # Imprime: "Samuel" (el último)
-print(alumnos[-2])   # Imprime: "María"  (el penúltimo)
+print(alumnos[-1])  # Imprime "Samuel" (el último)
+print(alumnos[-2])  # Imprime "María" (el penúltimo)
 ```
 
-**¿Por qué es útil?**
-Hace el código más limpio y fácil de leer, evitando escribir `alumnos[len(alumnos) - 1]`.
+Me resulta muy práctico porque me evita tener que escribir `alumnos[len(alumnos) - 1]` y hace que el código sea más legible.
 
 ---
 
 ### 3. ¿Qué son los docstrings?
 
-Un **docstring** es un texto explicativo delimitado por triples comillas (`"""..."""`) que se coloca al principio de una función, clase o módulo para explicar **qué hace, qué parámetros recibe y qué devuelve**.
+Son cadenas de texto entre comillas triples ("""...""") que coloco al principio de una función, clase o módulo para explicar qué hace, qué parámetros recibe y qué retorna.
 
-**¿En qué se diferencia de un comentario normal (`#`)?**
-1. Un comentario `#` es ignorado por Python, mientras que el docstring se guarda en la memoria del programa (`__doc__`).
-2. Se puede consultar en cualquier momento usando la función `help()` en consola.
-3. Los editores de código (como VS Code) lo leen automáticamente para mostrar sugerencias y ayudas flotantes mientras programas.
+A diferencia de un comentario normal con #:
+1. El docstring no se borra al compilar; se guarda en memoria y lo puedo consultar en la consola con help() o accediendo al atributo __doc__.
+2. Mi editor de código (como VS Code) lo lee automáticamente para mostrarme la documentación y las ayudas flotantes mientras escribo código.
 
-**Ejemplo sencillo:**
+Ejemplo:
+
 ```python
 def calcular_promedio(nota1: float, nota2: float) -> float:
-    """Calcula el promedio de dos notas numéricas."""
+    """Calcula el promedio simple de dos notas."""
     return (nota1 + nota2) / 2
 ```
 
@@ -70,41 +69,25 @@ def calcular_promedio(nota1: float, nota2: float) -> float:
 
 ### 4. ¿Qué operador realiza la división hacia abajo (floor division)?
 
-- `/`
-- **`//`  <-- [RESPUESTA CORRECTA]**
-- `%`
-- Ninguna de las anteriores
+La respuesta correcta es //
 
-**Explicación:**
-- `/` realiza la división normal con decimales: `7 / 2` resulta `3.5`.
-- **`//` realiza la división hacia abajo**: toma el resultado y se queda con el número entero inferior más cercano (`7 // 2` resulta `3`).
-- `%` es el operador de residuo (módulo): entrega lo que sobra de la división (`7 % 2` resulta `1`).
+La diferencia práctica con los otros operadores es:
+- / hace una división regular y devuelve un flotante: 7 / 2 da 3.5.
+- // hace la división entera o hacia abajo, quedándose con el entero inferior: 7 // 2 da 3.
+- % calcula el residuo de la división: 7 % 2 da 1.
 
 ---
 
 ### 5. Explique las ventajas y desventajas de Flask y Django
 
-Flask y Django son los dos frameworks web más conocidos en Python, pero tienen filosofías opuestas:
+He trabajado con ambos y la diferencia principal está en la filosofía y el alcance:
 
-- **Flask es un microframework ligero y flexible:** Te da solo lo básico (gestión de rutas y peticiones HTTP) y te deja libertad absoluta para elegir cómo organizar tu arquitectura y qué herramientas usar.
-- **Django es un framework "con todo incluido" (*batteries included*):** Trae de fábrica base de datos (ORM), panel de administración, autenticación de usuarios y seguridad integrada.
+Flask:
+Es un microframework muy liviano. Me da el control de las rutas y peticiones HTTP, y me da libertad total para decidir cómo estructurar el proyecto, qué base de datos usar y qué librerías conectar.
+- Ventajas: Es rápido de inicializar, consume pocos recursos y es ideal cuando quiero implementar una arquitectura limpia o hexagonal sin que el framework me obligue a seguir sus convenciones.
+- Desventajas: Al no traer casi nada integrado, si la aplicación crece me toca configurar o programar manualmente la autenticación, los formularios o las migraciones.
 
-#### Comparativa rápida:
-
-| Característica | **Flask** | **Django** |
-|---|---|---|
-| **Enfoque** | Minimalista y flexible | Completo y estructurado |
-| **Base de datos (ORM)** | No incluye (usas SQLite directo, SQLAlchemy, etc.) | Trae su propio ORM potente con migraciones |
-| **Panel de Administración** | No incluye de serie | Incluido y listo para usar |
-| **Curva de aprendizaje** | Rápido y sencillo para empezar | Más amplio por la cantidad de conceptos |
-
-#### Ventajas y Desventajas:
-
-**Flask:**
-- *Ventaja:* Es muy liviano, rápido y te permite aplicar arquitecturas limpias o hexagonales sin atarte a estructuras impuestas.
-- *Desventaja:* Si el proyecto crece, tienes que configurar y conectar manualmente la base de datos, la seguridad y las herramientas adicionales.
-
-**Django:**
-- *Ventaja:* Acelera el desarrollo en proyectos grandes porque ya tiene resuelta la autenticación, el panel de control y las migraciones de base de datos.
-- *Desventaja:* Es más pesado, más rígido y resulta innecesariamente complejo para microservicios o APIs pequeñas.
-
+Django:
+Es un framework completo ("con baterías incluidas"). Viene de fábrica con su propio ORM, panel de administración listo para producción, sistema de usuarios y seguridad.
+- Ventajas: Acelera mucho el desarrollo de proyectos completos porque ya tiene resueltas la mayoría de necesidades comunes.
+- Desventajas: Es más pesado, tiene una curva de aprendizaje más pronunciada y resulta rígido si quiero usar patrones desacoplados o si solo necesito una API pequeña.
