@@ -143,7 +143,7 @@ class SqliteStudentRepository(StudentRepositoryPort):
             select_query = f"""
                 SELECT * FROM students
                 {where_clause}
-                ORDER BY id DESC
+                ORDER BY id ASC
                 LIMIT ? OFFSET ?;
             """
             cursor = conn.execute(select_query, params + [per_page, offset])
