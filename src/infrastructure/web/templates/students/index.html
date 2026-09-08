@@ -211,51 +211,32 @@
                 {% endif %}
             </div>
 
-            <!-- Derecha: Elegir página directamente (selector desplegable y salto numérico) -->
-            <div class="flex items-center space-x-3 text-xs">
-                <!-- Dropdown selector de página -->
-                <form method="GET" action="{{ url_for('student_views.index') }}" class="flex items-center space-x-1.5">
-                    {% if search %}<input type="hidden" name="search" value="{{ search }}">{% endif %}
-                    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
-                    <label for="select_page" class="text-slate-500 font-medium">Elegir:</label>
-                    <select
-                        id="select_page"
-                        name="page"
-                        onchange="this.form.submit()"
-                        class="px-2.5 py-1 font-semibold bg-white border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm hover:border-slate-300"
-                        title="Selecciona una página para ir directamente"
-                    >
-                        {% for p in range(1, paginated.total_pages + 1) %}
-                            <option value="{{ p }}" {% if p == paginated.page %}selected{% endif %}>
-                                Pág. {{ p }} de {{ paginated.total_pages }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </form>
-
-                <!-- Input numérico para saltar directo -->
-                <form method="GET" action="{{ url_for('student_views.index') }}" class="flex items-center">
-                    {% if search %}<input type="hidden" name="search" value="{{ search }}">{% endif %}
-                    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+            <!-- Derecha: Saltar directamente a una página -->
+            <form method="GET" action="{{ url_for('student_views.index') }}" class="flex items-center space-x-2 text-xs">
+                {% if search %}<input type="hidden" name="search" value="{{ search }}">{% endif %}
+                {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+                <label for="jump_page" class="text-slate-500 font-medium whitespace-nowrap">Ir a la página:</label>
+                <div class="flex items-center">
                     <input
                         type="number"
+                        id="jump_page"
                         name="page"
                         min="1"
                         max="{{ paginated.total_pages }}"
                         value="{{ paginated.page }}"
-                        placeholder="#"
-                        class="w-12 px-2 py-1 text-center font-semibold bg-white border border-slate-200 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
-                        title="Escribe el número de página y presiona Enter o Ir"
+                        placeholder="{{ paginated.page }}"
+                        class="w-14 px-2 py-1.5 text-center font-semibold bg-white border border-slate-200 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 shadow-sm"
+                        title="Escribe el número de página (1 a {{ paginated.total_pages }}) y presiona Enter o Ir"
                     >
                     <button
                         type="submit"
-                        class="px-2.5 py-1 font-semibold rounded-r-lg bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm"
+                        class="px-3 py-1.5 font-semibold rounded-r-lg bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm"
                         title="Ir a página indicada"
                     >
                         Ir
                     </button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
