@@ -33,6 +33,7 @@ class ListStudentsUseCase:
         items = [
             StudentResponseDTO(
                 id=s.id,
+                documento=s.documento,
                 nombres=s.nombres,
                 apellidos=s.apellidos,
                 edad=s.edad,

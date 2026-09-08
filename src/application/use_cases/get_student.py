@@ -17,6 +17,7 @@ class GetStudentUseCase:
 
         return StudentResponseDTO(
             id=student.id,
+            documento=student.documento,
             nombres=student.nombres,
             apellidos=student.apellidos,
             edad=student.edad,

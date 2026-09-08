@@ -5,6 +5,7 @@ from typing import Optional
 
 from src.domain.exceptions import StudentValidationError
 
+DOCUMENTO_REGEX = re.compile(r"^[a-zA-Z0-9.\-]{6,20}$")
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 PHONE_REGEX = re.compile(r"^\+?[0-9\s\-()]{7,20}$")
 VALID_STATUSES = {"activo", "inactivo"}
@@ -13,6 +14,7 @@ VALID_STATUSES = {"activo", "inactivo"}
 @dataclass
 class Student:
     """Entidad que representa a un estudiante en el sistema."""
+    documento: str
     nombres: str
     apellidos: str
     edad: int
@@ -26,6 +28,12 @@ class Student:
 
     def validate(self) -> None:
         """Valida las reglas de negocio e invariantes del estudiante."""
+        if not self.documento or not self.documento.strip():
+            raise StudentValidationError("El campo 'documento' es obligatorio y no puede estar vacío.")
+        self.documento = self.documento.strip()
+        if not DOCUMENTO_REGEX.match(self.documento):
+            raise StudentValidationError("El campo 'documento' debe contener entre 6 y 20 caracteres alfanuméricos válidos.")
+
         if not self.nombres or not self.nombres.strip():
             raise StudentValidationError("El campo 'nombres' es obligatorio y no puede estar vacío.")
         self.nombres = self.nombres.strip()
@@ -59,6 +67,7 @@ class Student:
         """Convierte la entidad a un diccionario serializable."""
         return {
             "id": self.id,
+            "documento": self.documento,
             "nombres": self.nombres,
             "apellidos": self.apellidos,
             "edad": self.edad,

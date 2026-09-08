@@ -46,14 +46,28 @@ Entrevista/
 ```
 
 ### Modelo de Datos del Estudiante
-Cada registro cuenta con los siguientes campos:
-- **`id`**: Entero autoincremental (Clave primaria).
+Cada registro cuenta con los siguientes campos validados a nivel de Dominio:
+- **`id`**: Entero autoincremental (Clave primaria técnica en base de datos).
+- **`documento`**: Documento de identidad / Cédula único (6 a 20 caracteres alfanuméricos, e.g. `1118803077`). **Identificador de negocio único**.
 - **`nombres`**: Texto no vacío (obligatorio).
 - **`apellidos`**: Texto no vacío (obligatorio).
 - **`edad`**: Entero positivo (entre 1 y 120 años).
 - **`telefono`**: Texto con formato válido (7 a 20 dígitos/caracteres numéricos).
-- **`email`**: Dirección de correo electrónico única y con formato válido.
+- **`email`**: Dirección de correo electrónico única y con formato válido RFC.
 - **`status`**: Estado del estudiante: `'activo'` o `'inactivo'`.
+
+---
+
+## 📋 Observación de Auditoría y Diseño: Identificador Único por Documento de Identidad
+
+Durante la auditoría del sistema y modelado de dominio, se detectó un requerimiento esencial de integridad para aplicaciones académicas y de gestión estudiantil:
+
+> **El problema de la homonimia y la trazabilidad:** En instituciones y registros estudiantiles es sumamente común la existencia de estudiantes con nombres y apellidos idénticos o muy similares (e.g. dos "Juan Pérez"). Confiar únicamente en un `id` interno autoincremental no permite al evaluador o usuario final validar inequívocamente a la persona en el mundo real, y el correo electrónico puede variar con el tiempo o ser compartido por apoderados.
+
+### Solución Implementada:
+1. **Identificador Natural de Negocio (`documento`):** Se introdujo el campo `documento` (Cédula de Ciudadanía / Documento de Identidad) con restricción `UNIQUE` indexada en base de datos (`idx_students_documento`) y validación estricta de formato en la entidad de dominio `Student`.
+2. **Registro de Semilla con Documento Real:** Se configuró como primer registro de prueba en la base de datos el documento de identidad del candidato: **`1118803077`**, perteneciente a **Samuel Ballesteros** (Teléfono: `3104512230`), permitiendo validar inmediatamente búsquedas exactas, prevención de duplicados (`DuplicateDocumentoError` / HTTP 409 Conflict) y edición en la interfaz web.
+3. **Búsqueda Multicriterio Optimizada:** La barra de búsqueda del Dashboard Web y el parámetro `search` de la API REST filtran de manera instantánea por **`documento`**, `nombres`, `apellidos` y `email`.
 
 ---
 
@@ -65,8 +79,8 @@ Cada registro cuenta con los siguientes campos:
 
 ### Paso 1: Clonar el repositorio
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd Entrevista
+git clone https://github.com/Soretsellab/partikle-qa-backend-students.git
+cd partikle-qa-backend-students
 ```
 
 ### Paso 2: Crear y activar entorno virtual (Recomendado)
@@ -104,12 +118,12 @@ Al iniciar por primera vez, el sistema creará automáticamente la base de datos
 
 ## 🖥️ Interfaz Web (Plantillas Jinja2)
 
-La aplicación incluye un dashboard web responsivo estilizado con Tailwind CSS que permite:
-- **Visualizar estudiantes** con sus datos y badges de estado (`activo` en verde, `inactivo` en gris).
+La aplicación incluye un dashboard web interactivo y responsivo estilizado con Tailwind CSS que permite:
+- **Visualizar estudiantes** con su documento de identidad, datos personales y badges de estado (`activo` en verde, `inactivo` en gris).
 - **Filtrar por estado** (`activo` / `inactivo` / todos).
-- **Buscador en tiempo real** por nombres, apellidos o email.
+- **Buscador en tiempo real** por **documento de identidad**, nombres, apellidos o email.
 - **Paginación de resultados** configurable con controles de navegación anterior/siguiente.
-- **Modales integrados** para crear nuevo estudiante, editar información existente y confirmación de borrado.
+- **Modales funcionales e integrados** para crear nuevo estudiante, editar información existente (con prellenado seguro mediante atributos `data-*`) y confirmación modal de borrado.
 
 ---
 
@@ -124,23 +138,24 @@ Todos los endpoints retornan respuestas con formato JSON estándar.
   - `page`: Número de página (default: 1).
   - `per_page`: Elementos por página (default: 10, max: 100).
   - `status`: Filtrar por estado (`activo` o `inactivo`).
-  - `search`: Búsqueda textual en nombres, apellidos o email.
+  - `search`: Búsqueda textual por **documento**, nombres, apellidos o email.
 
 **Ejemplo de respuesta (200 OK):**
 ```json
 {
   "success": true,
   "data": {
-    "has_next": true,
+    "has_next": false,
     "has_prev": false,
     "items": [
       {
         "id": 1,
-        "nombres": "Juan Carlos",
-        "apellidos": "Pérez Gómez",
-        "edad": 22,
-        "telefono": "+573001234567",
-        "email": "juan.perez@example.com",
+        "documento": "1118803077",
+        "nombres": "Samuel",
+        "apellidos": "Ballesteros",
+        "edad": 24,
+        "telefono": "3104512230",
+        "email": "samuel.ballesteros@example.com",
         "status": "activo"
       }
     ],
@@ -164,6 +179,7 @@ Todos los endpoints retornan respuestas con formato JSON estándar.
 - **Cuerpo JSON:**
 ```json
 {
+  "documento": "1118803077",
   "nombres": "Camila",
   "apellidos": "Sánchez",
   "edad": 23,
@@ -174,16 +190,17 @@ Todos los endpoints retornan respuestas con formato JSON estándar.
 ```
 - **Códigos de estado:**
   - `201 Created`: Creado exitosamente.
-  - `400 Bad Request`: Error de validación o campos faltantes.
-  - `409 Conflict`: Correo electrónico ya registrado.
+  - `400 Bad Request`: Error de validación o campos faltantes (e.g. documento inválido).
+  - `409 Conflict`: Documento de identidad o correo electrónico ya registrado.
 
 ### 4. Actualizar Estudiante
 - **Método:** `PUT`
 - **URL:** `/api/v1/students/<id>`
 - **Headers:** `Content-Type: application/json`
-- **Cuerpo JSON (campos a actualizar):**
+- **Cuerpo JSON (campos a actualizar opcionales):**
 ```json
 {
+  "documento": "1118803077",
   "edad": 24,
   "status": "inactivo"
 }
@@ -197,15 +214,28 @@ Todos los endpoints retornan respuestas con formato JSON estándar.
 
 ---
 
-## 🧪 Pruebas Automatizadas y QA
+## 🧪 Pruebas Automatizadas y Cobertura QA
 
-Para ejecutar la suite completa de pruebas unitarias y de integración junto con el informe de cobertura de código:
+La suite cuenta con **95 pruebas automatizadas** (unitarias y de integración) con una **cobertura global del 97%**:
 
 ```bash
 pytest --cov=src --cov-report=term-missing
 ```
 
-Para generar además un reporte en HTML navegable:
+| Módulo | Cobertura | Descripción |
+|---|---|---|
+| `src/domain/entities/student.py` | **100%** | Invariantes, tipos, validación de documento, email, teléfono, edad |
+| `src/domain/exceptions.py` | **100%** | Excepciones de negocio (`DuplicateDocumentoError`, etc.) |
+| `src/domain/ports/student_repository.py` | **100%** | Contrato de interfaz del repositorio |
+| `src/application/dtos/student_dto.py` | **100%** | DTOs de transferencia y serialización |
+| `src/application/use_cases/*` | **100%** | Todos los casos de uso (Create, Get, List, Update, Delete) |
+| `src/infrastructure/database/db_connection.py` | **100%** | Esquema DDL, índices y conexiones seguras |
+| `src/infrastructure/database/sqlite_student_repository.py` | **92%** | Persistencia SQL, consultas parametrizadas y filtros |
+| `src/infrastructure/web/controllers/student_api_controller.py` | **98%** | Endpoints REST, códigos HTTP y serialización de errores |
+| `src/infrastructure/web/controllers/student_view_controller.py` | **100%** | Flujo completo de vistas Jinja2, filtros y modales |
+| **TOTAL** | **97%** | **95 tests PASSED** |
+
+Para generar un reporte en HTML navegable:
 ```bash
 pytest --cov=src --cov-report=html
 ```
@@ -213,6 +243,14 @@ pytest --cov=src --cov-report=html
 
 ---
 
-## 📬 Contacto de Entrega
-- Correo 1: `gerenciap@partikle.tech`
-- Correo 2: `atrespalacios@partikle.tech`
+## 👤 Información del Candidato
+- **Nombre:** Samuel Ballesteros
+- **Documento de Identidad:** `1118803077`
+- **Teléfono de Contacto:** `3104512230`
+- **Repositorio Público GitHub:** [https://github.com/Soretsellab/partikle-qa-backend-students](https://github.com/Soretsellab/partikle-qa-backend-students)
+
+---
+
+## 📬 Contacto de Entrega (Evaluadores Partikle)
+- **Gerencia de Proyectos:** `gerenciap@partikle.tech`
+- **Evaluación Técnica:** `atrespalacios@partikle.tech`

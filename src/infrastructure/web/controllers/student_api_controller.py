@@ -7,7 +7,12 @@ from src.application.use_cases.delete_student import DeleteStudentUseCase
 from src.application.use_cases.get_student import GetStudentUseCase
 from src.application.use_cases.list_students import ListStudentsUseCase
 from src.application.use_cases.update_student import UpdateStudentUseCase
-from src.domain.exceptions import DuplicateEmailError, StudentNotFoundError, StudentValidationError
+from src.domain.exceptions import (
+    DuplicateDocumentoError,
+    DuplicateEmailError,
+    StudentNotFoundError,
+    StudentValidationError,
+)
 
 student_api_bp = Blueprint("student_api", __name__, url_prefix="/api/v1/students")
 
@@ -54,13 +59,14 @@ def create_student():
     if not isinstance(body, dict):
         return jsonify({"success": False, "error": "Cuerpo de solicitud inválido o ausente (se espera formato JSON)."}), 400
 
-    required_fields = ["nombres", "apellidos", "edad", "telefono", "email"]
+    required_fields = ["documento", "nombres", "apellidos", "edad", "telefono", "email"]
     missing = [field for field in required_fields if field not in body]
     if missing:
         return jsonify({"success": False, "error": f"Campos requeridos faltantes: {', '.join(missing)}"}), 400
 
     try:
         dto = CreateStudentDTO(
+            documento=str(body.get("documento", "")),
             nombres=str(body.get("nombres", "")),
             apellidos=str(body.get("apellidos", "")),
             edad=int(body.get("edad")) if body.get("edad") is not None else -1,
@@ -81,7 +87,7 @@ def create_student():
         }), 201
     except StudentValidationError as e:
         return jsonify({"success": False, "error": str(e)}), 400
-    except DuplicateEmailError as e:
+    except (DuplicateEmailError, DuplicateDocumentoError) as e:
         return jsonify({"success": False, "error": str(e)}), 409
 
 
@@ -101,6 +107,7 @@ def update_student(student_id: int):
 
     dto = UpdateStudentDTO(
         id=student_id,
+        documento=body.get("documento"),
         nombres=body.get("nombres"),
         apellidos=body.get("apellidos"),
         edad=edad_val,
@@ -121,7 +128,7 @@ def update_student(student_id: int):
         return jsonify({"success": False, "error": str(e)}), 404
     except StudentValidationError as e:
         return jsonify({"success": False, "error": str(e)}), 400
-    except DuplicateEmailError as e:
+    except (DuplicateEmailError, DuplicateDocumentoError) as e:
         return jsonify({"success": False, "error": str(e)}), 409
 
 

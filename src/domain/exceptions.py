@@ -19,3 +19,9 @@ class StudentNotFoundError(DomainException):
 class DuplicateEmailError(DomainException):
     """Lanzada cuando se intenta registrar o actualizar un estudiante con un correo ya existente."""
     pass
+
+
+class DuplicateDocumentoError(DomainException):
+    """Lanzada cuando se intenta registrar o actualizar un estudiante con un documento de identidad ya existente."""
+    pass
+

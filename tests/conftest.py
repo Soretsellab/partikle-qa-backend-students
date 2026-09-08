@@ -52,6 +52,7 @@ def client(app):
 def sample_student_dto():
     """DTO de estudiante válido para pruebas."""
     return CreateStudentDTO(
+        documento="1118803077",
         nombres="Ana María",
         apellidos="Gómez Restrepo",
         edad=23,

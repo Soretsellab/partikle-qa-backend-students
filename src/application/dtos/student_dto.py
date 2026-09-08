@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 
 @dataclass
 class CreateStudentDTO:
+    documento: str
     nombres: str
     apellidos: str
     edad: int
@@ -16,6 +17,7 @@ class CreateStudentDTO:
 @dataclass
 class UpdateStudentDTO:
     id: int
+    documento: Optional[str] = None
     nombres: Optional[str] = None
     apellidos: Optional[str] = None
     edad: Optional[int] = None
@@ -27,6 +29,7 @@ class UpdateStudentDTO:
 @dataclass
 class StudentResponseDTO:
     id: int
+    documento: str
     nombres: str
     apellidos: str
     edad: int
@@ -37,6 +40,7 @@ class StudentResponseDTO:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
+            "documento": self.documento,
             "nombres": self.nombres,
             "apellidos": self.apellidos,
             "edad": self.edad,

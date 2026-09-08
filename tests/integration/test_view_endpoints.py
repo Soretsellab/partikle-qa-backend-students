@@ -11,9 +11,11 @@ class TestStudentViewEndpoints:
         html = res.get_data(as_text=True)
         assert "Directorio de Estudiantes" in html
         assert "Partikle Academy" in html
+        assert "Documento" in html
 
     def test_create_student_via_form_redirects_and_renders(self, client):
         form_data = {
+            "documento": "1118803077",
             "nombres": "Estudiante",
             "apellidos": "Formulario",
             "edad": "23",
@@ -26,9 +28,11 @@ class TestStudentViewEndpoints:
         html = res.get_data(as_text=True)
         assert "Estudiante creado con éxito." in html
         assert "Estudiante Formulario" in html
+        assert "1118803077" in html
 
     def test_create_student_via_form_invalid_shows_flash_error(self, client):
         form_data = {
+            "documento": "1118803077",
             "nombres": "Estudiante",
             "apellidos": "Invalido",
             "edad": "-5",
@@ -41,11 +45,38 @@ class TestStudentViewEndpoints:
         html = res.get_data(as_text=True)
         assert "Error al crear estudiante:" in html
 
+    def test_create_student_via_form_duplicate_documento_shows_flash_error(self, client):
+        form_data1 = {
+            "documento": "1118803077",
+            "nombres": "Estudiante Uno",
+            "apellidos": "Formulario",
+            "edad": "23",
+            "telefono": "+573009990011",
+            "email": "form.uno@example.com",
+            "status": "activo",
+        }
+        client.post("/students/create", data=form_data1, follow_redirects=True)
+
+        form_data2 = {
+            "documento": "1118803077",
+            "nombres": "Estudiante Dos",
+            "apellidos": "Formulario",
+            "edad": "24",
+            "telefono": "+573009990012",
+            "email": "form.dos@example.com",
+            "status": "activo",
+        }
+        res = client.post("/students/create", data=form_data2, follow_redirects=True)
+        assert res.status_code == 200
+        html = res.get_data(as_text=True)
+        assert "Ya existe un estudiante registrado con el documento" in html
+
     def test_edit_student_via_form_redirects_and_updates(self, client):
         # Crear primero vía API
         create_res = client.post(
             "/api/v1/students",
             json={
+                "documento": "1118803077",
                 "nombres": "Original",
                 "apellidos": "Nombre",
                 "edad": 20,
@@ -57,6 +88,7 @@ class TestStudentViewEndpoints:
 
         # Enviar formulario de edición
         update_data = {
+            "documento": "1118803999",
             "nombres": "Modificado",
             "apellidos": "Nombre",
             "edad": "25",
@@ -69,12 +101,14 @@ class TestStudentViewEndpoints:
         html = res.get_data(as_text=True)
         assert "Estudiante actualizado con éxito." in html
         assert "Modificado Nombre" in html
+        assert "1118803999" in html
 
     def test_delete_student_via_form_redirects(self, client):
         # Crear primero vía API
         create_res = client.post(
             "/api/v1/students",
             json={
+                "documento": "1118803077",
                 "nombres": "Eliminar",
                 "apellidos": "Vista",
                 "edad": 22,
@@ -99,7 +133,7 @@ class TestStudentViewEndpoints:
         assert res.status_code == 200
 
     def test_view_edit_non_existent_student_shows_error(self, client):
-        res = client.post("/students/99999/edit", data={"nombres": "X", "edad": "20"}, follow_redirects=True)
+        res = client.post("/students/99999/edit", data={"documento": "1118803077", "nombres": "X", "edad": "20"}, follow_redirects=True)
         assert res.status_code == 200
         html = res.get_data(as_text=True)
         assert "Error al actualizar estudiante:" in html

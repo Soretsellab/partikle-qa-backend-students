@@ -1,100 +1,69 @@
 # Parte 1: Respuestas Teóricas — Prueba Técnica Python (QA Backend)
 
-A continuación se presentan las respuestas a las preguntas teóricas solicitadas en la evaluación:
+Respuestas directas, claras y fundamentadas a las preguntas teóricas de la evaluación:
 
 ---
 
 ### 1. ¿Cuáles son los tipos de datos en Python?
 
-Python es un lenguaje fuertemente tipado y dinámico. Sus tipos de datos incorporados (*built-in types*) se agrupan según su naturaleza y mutabilidad:
+En Python, los tipos de datos básicos y más utilizados se dividen en:
 
-1. **Numéricos (`Numeric Types`):**
-   - `int`: Números enteros de precisión arbitraria (ej. `42`, `-10`).
-   - `float`: Números de coma flotante de precisión doble según IEEE 754 (ej. `3.14159`, `1e-4`).
-   - `complex`: Números complejos con parte real e imaginaria (ej. `2 + 3j`).
+1. **Numéricos:**
+   - `int`: Números enteros (ej. `25`, `-5`).
+   - `float`: Números decimales (ej. `3.14`, `0.5`).
+   - `complex`: Números complejos (ej. `2 + 3j`).
 
-2. **Secuencias (`Sequence Types`):**
-   - `str`: Secuencias inmutables de caracteres Unicode (ej. `"Backend"`).
-   - `list`: Colección ordenada, heterogénea y **mutable** de elementos (ej. `[1, "QA", True]`).
-   - `tuple`: Colección ordenada, heterogénea e **inmutable** (ej. `(10, 20)`).
-   - `range`: Secuencia inmutable de números comúnmente usada en bucles iterativos (ej. `range(0, 10)`).
+2. **Texto:**
+   - `str`: Cadenas de caracteres / texto (ej. `"Samuel Ballesteros"`).
 
-3. **Mapeos (`Mapping Types`):**
-   - `dict`: Colección mutable de pares clave-valor indexados por claves hashables (ej. `{"id": 1, "status": "activo"}`).
+3. **Colecciones y Secuencias:**
+   - `list`: Listas ordenadas que se pueden modificar (ej. `[1, 2, 3]`).
+   - `tuple`: Tuplas ordenadas que no se pueden modificar (inmutables) (ej. `(10, 20)`).
+   - `dict`: Diccionarios de clave-valor (ej. `{"nombre": "Samuel", "edad": 24}`).
+   - `set`: Conjuntos de elementos únicos, sin duplicados ni orden fijo (ej. `{1, 2, 3}`).
 
-4. **Conjuntos (`Set Types`):**
-   - `set`: Colección mutable, no ordenada y sin duplicados de elementos hashables (ej. `{1, 2, 3}`).
-   - `frozenset`: Versión inmutable y hashable de un `set`.
+4. **Booleanos:**
+   - `bool`: Valores lógicos de verdad (`True` o `False`).
 
-5. **Booleanos (`Boolean Type`):**
-   - `bool`: Subtipo de `int` que representa valores de verdad lógica: `True` y `False`.
-
-6. **Tipos Binarios (`Binary Types`):**
-   - `bytes`: Secuencia inmutable de bytes (ej. `b"datos"`).
-   - `bytearray`: Secuencia mutable de bytes.
-   - `memoryview`: Permite acceder a la memoria de otros objetos binarios sin realizar copias.
-
-7. **Nulo / Especial:**
-   - `NoneType` (`None`): Representa la ausencia de valor o valor nulo de retorno.
+5. **Nulo:**
+   - `None`: Representa la ausencia de valor.
 
 ---
 
 ### 2. ¿Para qué se usan los índices negativos en las secuencias?
 
-En Python, los índices negativos permiten **acceder y rebanar (*slicing*) secuencias (cadenas, listas, tuplas) comenzando desde el final hacia el principio**, eliminando la necesidad de calcular manualmente `len(secuencia) - 1`.
+Los índices negativos sirven para **acceder a los elementos de una lista, tupla o texto empezando a contar desde el final hacia el principio**, sin necesidad de calcular la longitud total de la secuencia.
 
-- El índice `-1` referencia al **último elemento**.
-- El índice `-2` referencia al **penúltimo elemento**, y así sucesivamente hasta `-len(secuencia)` que apunta al primer elemento.
+- El índice `-1` es el **último** elemento.
+- El índice `-2` es el **penúltimo** elemento.
 
-**Ejemplo:**
+**Ejemplo sencillo:**
 ```python
-alumnos = ["Carlos", "María", "Andrés"]
-print(alumnos[-1])  # "Andrés" (último)
-print(alumnos[-2])  # "María"  (penúltimo)
+alumnos = ["Carlos", "María", "Samuel"]
 
-# Slicing: Obtener los dos últimos elementos
-print(alumnos[-2:])  # ['María', 'Andrés']
-
-# Invertir una secuencia:
-print(alumnos[::-1])  # ['Andrés', 'María', 'Carlos']
+print(alumnos[-1])   # Imprime: "Samuel" (el último)
+print(alumnos[-2])   # Imprime: "María"  (el penúltimo)
 ```
 
-**Ventajas principales:**
-- Mayor legibilidad del código (más idiomático o *Pythonic*).
-- Menor probabilidad de errores por desfase de índice (*off-by-one errors*).
-- Eficiencia computacional al evitar consultas previas a la longitud de la colección.
+**¿Por qué es útil?**
+Hace el código más limpio y fácil de leer, evitando escribir `alumnos[len(alumnos) - 1]`.
 
 ---
 
 ### 3. ¿Qué son los docstrings?
 
-Los **docstrings** (*documentation strings*) son literales de cadena de texto (generalmente delimitados por triples comillas `"""` o `'''`) situados como la **primera declaración** dentro de la definición de un módulo, función, método o clase.
+Un **docstring** es un texto explicativo delimitado por triples comillas (`"""..."""`) que se coloca al principio de una función, clase o módulo para explicar **qué hace, qué parámetros recibe y qué devuelve**.
 
-Su propósito es proporcionar documentación interna estructurada sobre el comportamiento, parámetros, valores de retorno y excepciones del elemento.
+**¿En qué se diferencia de un comentario normal (`#`)?**
+1. Un comentario `#` es ignorado por Python, mientras que el docstring se guarda en la memoria del programa (`__doc__`).
+2. Se puede consultar en cualquier momento usando la función `help()` en consola.
+3. Los editores de código (como VS Code) lo leen automáticamente para mostrar sugerencias y ayudas flotantes mientras programas.
 
-**Características clave:**
-1. A diferencia de los comentarios regulares (`#`), los docstrings no son descartados por el intérprete: se compilan en bytecode y se almacenan en el atributo especial `__doc__` del objeto.
-2. Son accesibles en tiempo de ejecución mediante la función integrada `help()` o introspección (`objeto.__doc__`).
-3. Son interpretados por herramientas automatizadas de documentación (Sphinx, MkDocs, pydoc) y por entornos de desarrollo para autocompletado y tipado.
-4. Siguen estándares de la comunidad como **PEP 257** y formatos estándar (Google Style, NumPy, Sphinx).
-
-**Ejemplo:**
+**Ejemplo sencillo:**
 ```python
-def calcular_promedio(calificaciones: list[float]) -> float:
-    """Calcula la media aritmética de una lista de calificaciones.
-
-    Args:
-        calificaciones (list[float]): Lista con las notas numéricas.
-
-    Returns:
-        float: Promedio redondeado a dos decimales.
-
-    Raises:
-        ValueError: Si la lista de calificaciones está vacía.
-    """
-    if not calificaciones:
-        raise ValueError("La lista de calificaciones no puede estar vacía.")
-    return round(sum(calificaciones) / len(calificaciones), 2)
+def calcular_promedio(nota1: float, nota2: float) -> float:
+    """Calcula el promedio de dos notas numéricas."""
+    return (nota1 + nota2) / 2
 ```
 
 ---
@@ -107,40 +76,35 @@ def calcular_promedio(calificaciones: list[float]) -> float:
 - Ninguna de las anteriores
 
 **Explicación:**
-El operador `//` realiza la **división entera / división hacia abajo (*floor division*)**, truncando el resultado al número entero menor o igual más cercano (redondeo hacia el infinito negativo, equivalente a `math.floor(a / b)`).
-- `7 / 2` produce `3.5` (división flotante estándar).
-- `7 // 2` produce `3`.
-- `-7 // 2` produce `-4` (confirma que redondea hacia abajo, no trunca simplemente hacia cero).
-- `%` corresponde al operador de módulo (residuo de la división).
+- `/` realiza la división normal con decimales: `7 / 2` resulta `3.5`.
+- **`//` realiza la división hacia abajo**: toma el resultado y se queda con el número entero inferior más cercano (`7 // 2` resulta `3`).
+- `%` es el operador de residuo (módulo): entrega lo que sobra de la división (`7 % 2` resulta `1`).
 
 ---
 
 ### 5. Explique las ventajas y desventajas de Flask y Django
 
-Tanto Flask como Django son los dos frameworks web más consolidados en el ecosistema Python, pero obedecen a filosofías de diseño distintas:
+Flask y Django son los dos frameworks web más conocidos en Python, pero tienen filosofías opuestas:
 
-| Criterio | **Flask** (Microframework) | **Django** ("Batteries Included") |
-| :--- | :--- | :--- |
-| **Filosofía** | Minimalista, no obstinado (*unopinionated*), flexible y extensible. | Monolítico, obstinado (*opinionated*), todo incluido de fábrica. |
-| **ORM** | No incluye ORM por defecto (libertad para usar SQLAlchemy, Peewee, SQLite nativo, etc.). | ORM propio muy potente, acoplado al framework con soporte de migraciones automáticas. |
-| **Panel Admin** | No incluye (debe integrarse con Flask-Admin o desarrollarse). | Panel de administración autogenerado listo para producción. |
-| **Autenticación** | No incluye nativamente (se usan extensiones como Flask-Login o Flask-JWT-Extended). | Sistema completo de usuarios, roles, permisos y hashing de contraseñas de serie. |
-| **Curva de Aprendizaje**| Baja al inicio; se requiere mayor experiencia para diseñar arquitecturas escalables. | Media/Alta al inicio debido a su volumen de convenciones y abstracciones. |
+- **Flask es un microframework ligero y flexible:** Te da solo lo básico (gestión de rutas y peticiones HTTP) y te deja libertad absoluta para elegir cómo organizar tu arquitectura y qué herramientas usar.
+- **Django es un framework "con todo incluido" (*batteries included*):** Trae de fábrica base de datos (ORM), panel de administración, autenticación de usuarios y seguridad integrada.
 
-#### Ventajas y Desventajas de Flask
-- **Ventajas:**
-  - **Gran flexibilidad arquitectónica:** Ideal para implementar arquitecturas limpias, hexagonales, microservicios y APIs ligeras sin forzar patrones ajenos.
-  - **Bajo consumo de recursos y ligereza:** Se carga rápido y solo ejecuta el código estrictamente necesario.
-  - **Total libertad de herramientas:** Permite elegir las librerías de persistencia, validación y serialización según las necesidades del proyecto.
-- **Desventajas:**
-  - **Mayor esfuerzo inicial en proyectos complejos:** Las funcionalidades como autenticación, migraciones, validación y seguridad avanzada deben configurarse o implementarse manualmente.
-  - **Riesgo de falta de estandarización:** Equipos sin directrices claras pueden estructurar proyectos de formas heterogéneas.
+#### Comparativa rápida:
 
-#### Ventajas y Desventajas de Django
-- **Ventajas:**
-  - **Desarrollo rápido (Time-to-Market):** Provee de fábrica ORM, motor de migraciones, panel de administración, CSRF protection, autenticación y formularios.
-  - **Estandarización:** La estructura común facilita la incorporación de nuevos desarrolladores a equipos grandes.
-  - **Comunidad y ecosistema maduro:** Gran cantidad de paquetes listos para usar (`django-rest-framework`, `django-allauth`, etc.).
-- **Desventajas:**
-  - **Rigidez arquitectónica:** Intentar implementar patrones desacoplados (como arquitectura hexagonal pura) resulta costoso y contraproducente debido al fuerte acoplamiento del ORM y los modelos de Django.
-  - **Sobrecarga innecesaria para microservicios simples:** Incluye muchos componentes que no son necesarios cuando solo se requiere una API o servicio liviano.
+| Característica | **Flask** | **Django** |
+|---|---|---|
+| **Enfoque** | Minimalista y flexible | Completo y estructurado |
+| **Base de datos (ORM)** | No incluye (usas SQLite directo, SQLAlchemy, etc.) | Trae su propio ORM potente con migraciones |
+| **Panel de Administración** | No incluye de serie | Incluido y listo para usar |
+| **Curva de aprendizaje** | Rápido y sencillo para empezar | Más amplio por la cantidad de conceptos |
+
+#### Ventajas y Desventajas:
+
+**Flask:**
+- *Ventaja:* Es muy liviano, rápido y te permite aplicar arquitecturas limpias o hexagonales sin atarte a estructuras impuestas.
+- *Desventaja:* Si el proyecto crece, tienes que configurar y conectar manualmente la base de datos, la seguridad y las herramientas adicionales.
+
+**Django:**
+- *Ventaja:* Acelera el desarrollo en proyectos grandes porque ya tiene resuelta la autenticación, el panel de control y las migraciones de base de datos.
+- *Desventaja:* Es más pesado, más rígido y resulta innecesariamente complejo para microservicios o APIs pequeñas.
+

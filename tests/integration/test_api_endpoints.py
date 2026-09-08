@@ -7,6 +7,7 @@ class TestStudentApiEndpoints:
 
     def test_create_student_success(self, client):
         payload = {
+            "documento": "1118803077",
             "nombres": "Mateo",
             "apellidos": "Guzmán",
             "edad": 22,
@@ -19,6 +20,7 @@ class TestStudentApiEndpoints:
         data = res.get_json()
         assert data["success"] is True
         assert data["data"]["id"] is not None
+        assert data["data"]["documento"] == "1118803077"
         assert data["data"]["nombres"] == "Mateo"
         assert data["data"]["email"] == "mateo.guzman@example.com"
 
@@ -38,6 +40,7 @@ class TestStudentApiEndpoints:
 
     def test_create_student_validation_error_invalid_email(self, client):
         payload = {
+            "documento": "1118803077",
             "nombres": "Mateo",
             "apellidos": "Guzmán",
             "edad": 22,
@@ -49,8 +52,37 @@ class TestStudentApiEndpoints:
         assert res.status_code == 400
         assert res.get_json()["success"] is False
 
+    def test_create_student_duplicate_documento_conflict(self, client):
+        payload1 = {
+            "documento": "1118803077",
+            "nombres": "Mateo",
+            "apellidos": "Guzmán",
+            "edad": 22,
+            "telefono": "+573012345678",
+            "email": "mateo.uno@example.com",
+            "status": "activo",
+        }
+        payload2 = {
+            "documento": "1118803077",
+            "nombres": "Mateo Segundo",
+            "apellidos": "Guzmán",
+            "edad": 23,
+            "telefono": "+573012345679",
+            "email": "mateo.dos@example.com",
+            "status": "activo",
+        }
+        res1 = client.post("/api/v1/students", json=payload1)
+        assert res1.status_code == 201
+
+        res2 = client.post("/api/v1/students", json=payload2)
+        assert res2.status_code == 409
+        data = res2.get_json()
+        assert data["success"] is False
+        assert "Ya existe un estudiante registrado con el documento" in data["error"]
+
     def test_create_student_duplicate_email_conflict(self, client):
         payload = {
+            "documento": "1017283940",
             "nombres": "Mateo",
             "apellidos": "Guzmán",
             "edad": 22,
@@ -61,7 +93,8 @@ class TestStudentApiEndpoints:
         res1 = client.post("/api/v1/students", json=payload)
         assert res1.status_code == 201
 
-        res2 = client.post("/api/v1/students", json=payload)
+        payload_diff_doc = dict(payload, documento="1028394051")
+        res2 = client.post("/api/v1/students", json=payload_diff_doc)
         assert res2.status_code == 409
         data = res2.get_json()
         assert data["success"] is False
@@ -71,6 +104,7 @@ class TestStudentApiEndpoints:
         create_res = client.post(
             "/api/v1/students",
             json={
+                "documento": "1118803077",
                 "nombres": "Lucía",
                 "apellidos": "Torres",
                 "edad": 21,
@@ -82,6 +116,7 @@ class TestStudentApiEndpoints:
 
         get_res = client.get(f"/api/v1/students/{student_id}")
         assert get_res.status_code == 200
+        assert get_res.get_json()["data"]["documento"] == "1118803077"
         assert get_res.get_json()["data"]["nombres"] == "Lucía"
 
     def test_get_student_by_id_not_found(self, client):
@@ -95,6 +130,7 @@ class TestStudentApiEndpoints:
             client.post(
                 "/api/v1/students",
                 json={
+                    "documento": f"100000000{i}",
                     "nombres": f"Alumno {i}",
                     "apellidos": f"Test {i}",
                     "edad": 20 + i,
@@ -111,12 +147,19 @@ class TestStudentApiEndpoints:
         assert data["total"] == 2
         assert len(data["items"]) == 2
 
-        # Búsqueda por texto
+        # Búsqueda por texto (nombre)
         res_search = client.get("/api/v1/students?search=Alumno 3")
         assert res_search.status_code == 200
         data_search = res_search.get_json()["data"]
         assert data_search["total"] == 1
         assert data_search["items"][0]["nombres"] == "Alumno 3"
+
+        # Búsqueda por documento
+        res_doc = client.get("/api/v1/students?search=1000000003")
+        assert res_doc.status_code == 200
+        data_doc = res_doc.get_json()["data"]
+        assert data_doc["total"] == 1
+        assert data_doc["items"][0]["documento"] == "1000000003"
 
     def test_list_students_invalid_query_params(self, client):
         res = client.get("/api/v1/students?page=abc")
@@ -127,6 +170,7 @@ class TestStudentApiEndpoints:
         create_res = client.post(
             "/api/v1/students",
             json={
+                "documento": "1118803077",
                 "nombres": "Camilo",
                 "apellidos": "Sesto",
                 "edad": 24,
@@ -139,10 +183,11 @@ class TestStudentApiEndpoints:
 
         update_res = client.put(
             f"/api/v1/students/{student_id}",
-            json={"edad": 25, "status": "inactivo"},
+            json={"documento": "1118803999", "edad": 25, "status": "inactivo"},
         )
         assert update_res.status_code == 200
         data = update_res.get_json()["data"]
+        assert data["documento"] == "1118803999"
         assert data["edad"] == 25
         assert data["status"] == "inactivo"
         assert data["nombres"] == "Camilo"
@@ -155,6 +200,7 @@ class TestStudentApiEndpoints:
         create_res = client.post(
             "/api/v1/students",
             json={
+                "documento": "1118803077",
                 "nombres": "Rosa",
                 "apellidos": "Díaz",
                 "edad": 20,
@@ -171,6 +217,7 @@ class TestStudentApiEndpoints:
         create_res = client.post(
             "/api/v1/students",
             json={
+                "documento": "1118803077",
                 "nombres": "Para",
                 "apellidos": "Borrar",
                 "edad": 20,
@@ -199,18 +246,27 @@ class TestStudentApiEndpoints:
         res = client.put("/api/v1/students/1", json={"edad": "invalido"})
         assert res.status_code == 400
 
-    def test_update_student_duplicate_email_conflict(self, client):
-        # Crear estudiante 1
+    def test_update_student_duplicate_documento_conflict(self, client):
         client.post("/api/v1/students", json={
-            "nombres": "E1", "apellidos": "A1", "edad": 20, "telefono": "3001111111", "email": "e1@test.com"
+            "documento": "1118803077", "nombres": "E1", "apellidos": "A1", "edad": 20, "telefono": "3001111111", "email": "e1@test.com"
         })
-        # Crear estudiante 2
         res2 = client.post("/api/v1/students", json={
-            "nombres": "E2", "apellidos": "A2", "edad": 20, "telefono": "3002222222", "email": "e2@test.com"
+            "documento": "1028394051", "nombres": "E2", "apellidos": "A2", "edad": 20, "telefono": "3002222222", "email": "e2@test.com"
         })
         id2 = res2.get_json()["data"]["id"]
 
-        # Intentar poner a estudiante 2 el email de estudiante 1
+        res_update = client.put(f"/api/v1/students/{id2}", json={"documento": "1118803077"})
+        assert res_update.status_code == 409
+
+    def test_update_student_duplicate_email_conflict(self, client):
+        client.post("/api/v1/students", json={
+            "documento": "1118803077", "nombres": "E1", "apellidos": "A1", "edad": 20, "telefono": "3001111111", "email": "e1@test.com"
+        })
+        res2 = client.post("/api/v1/students", json={
+            "documento": "1028394051", "nombres": "E2", "apellidos": "A2", "edad": 20, "telefono": "3002222222", "email": "e2@test.com"
+        })
+        id2 = res2.get_json()["data"]["id"]
+
         res_update = client.put(f"/api/v1/students/{id2}", json={"email": "e1@test.com"})
         assert res_update.status_code == 409
 

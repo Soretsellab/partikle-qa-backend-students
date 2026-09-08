@@ -17,14 +17,15 @@ def seed_sample_data(app):
         students, total = repo.list_all(page=1, per_page=1)
         if total == 0:
             samples = [
-                CreateStudentDTO("Juan Carlos", "Pérez Gómez", 22, "+573001234567", "juan.perez@example.com", "activo"),
-                CreateStudentDTO("María Alejandra", "Gómez López", 24, "+573109876543", "maria.gomez@example.com", "activo"),
-                CreateStudentDTO("Carlos Andrés", "Rodríguez Ruiz", 26, "+573204567890", "carlos.rodriguez@example.com", "inactivo"),
-                CreateStudentDTO("Ana Sofía", "Martínez Castro", 21, "+573155551234", "ana.martinez@example.com", "activo"),
-                CreateStudentDTO("Diego Fernando", "Morales Toro", 23, "+573178889900", "diego.morales@example.com", "activo"),
-                CreateStudentDTO("Laura Camila", "Valencia Díaz", 20, "+573187776655", "laura.valencia@example.com", "inactivo"),
-                CreateStudentDTO("Sebastián", "Herrera Cano", 25, "+573012223344", "sebastian.herrera@example.com", "activo"),
-                CreateStudentDTO("Valentina", "Ospina Ríos", 22, "+573114445566", "valentina.ospina@example.com", "activo"),
+                CreateStudentDTO("1118803077", "Samuel", "Ballesteros", 24, "3104512230", "samuel.ballesteros@example.com", "activo"),
+                CreateStudentDTO("1017283940", "Juan Carlos", "Pérez Gómez", 22, "+573001234568", "juan.perez@example.com", "activo"),
+                CreateStudentDTO("1028394051", "María Alejandra", "Gómez López", 24, "+573109876543", "maria.gomez@example.com", "activo"),
+                CreateStudentDTO("1039405162", "Carlos Andrés", "Rodríguez Ruiz", 26, "+573204567890", "carlos.rodriguez@example.com", "inactivo"),
+                CreateStudentDTO("1040516273", "Ana Sofía", "Martínez Castro", 21, "+573155551234", "ana.martinez@example.com", "activo"),
+                CreateStudentDTO("1051627384", "Diego Fernando", "Morales Toro", 23, "+573178889900", "diego.morales@example.com", "activo"),
+                CreateStudentDTO("1062738495", "Laura Camila", "Valencia Díaz", 20, "+573187776655", "laura.valencia@example.com", "inactivo"),
+                CreateStudentDTO("1073849506", "Sebastián", "Herrera Cano", 25, "+573012223344", "sebastian.herrera@example.com", "activo"),
+                CreateStudentDTO("1084950617", "Valentina", "Ospina Ríos", 22, "+573114445566", "valentina.ospina@example.com", "activo"),
             ]
             use_case = CreateStudentUseCase(repo)
             for sample in samples:

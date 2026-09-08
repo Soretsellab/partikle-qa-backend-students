@@ -24,6 +24,12 @@ class StudentRepositoryPort(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
+    def get_by_documento(self, documento: str) -> Optional[Student]:
+        """Obtiene un estudiante por su documento de identidad único."""
+        pass  # pragma: no cover
+
+
+    @abstractmethod
     def list_all(
         self,
         filters: Optional[dict] = None,

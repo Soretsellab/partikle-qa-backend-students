@@ -23,6 +23,7 @@ def init_db(db_path: Optional[str] = None) -> None:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS students (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    documento TEXT NOT NULL UNIQUE,
                     nombres TEXT NOT NULL,
                     apellidos TEXT NOT NULL,
                     edad INTEGER NOT NULL,
@@ -33,6 +34,7 @@ def init_db(db_path: Optional[str] = None) -> None:
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """)
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_students_documento ON students(documento);")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_students_email ON students(email);")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_students_status ON students(status);")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_students_nombres ON students(nombres);")

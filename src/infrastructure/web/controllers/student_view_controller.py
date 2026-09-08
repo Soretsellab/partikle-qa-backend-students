@@ -7,7 +7,12 @@ from src.application.use_cases.delete_student import DeleteStudentUseCase
 from src.application.use_cases.get_student import GetStudentUseCase
 from src.application.use_cases.list_students import ListStudentsUseCase
 from src.application.use_cases.update_student import UpdateStudentUseCase
-from src.domain.exceptions import DuplicateEmailError, StudentNotFoundError, StudentValidationError
+from src.domain.exceptions import (
+    DuplicateDocumentoError,
+    DuplicateEmailError,
+    StudentNotFoundError,
+    StudentValidationError,
+)
 
 student_view_bp = Blueprint("student_views", __name__)
 
@@ -49,6 +54,7 @@ def index():
 @student_view_bp.route("/students/create", methods=["POST"])
 def create_student():
     """Crear estudiante desde formulario web."""
+    documento = request.form.get("documento", "")
     nombres = request.form.get("nombres", "")
     apellidos = request.form.get("apellidos", "")
     edad_raw = request.form.get("edad", "")
@@ -59,6 +65,7 @@ def create_student():
     try:
         edad = int(edad_raw)
         dto = CreateStudentDTO(
+            documento=documento,
             nombres=nombres,
             apellidos=apellidos,
             edad=edad,
@@ -69,7 +76,7 @@ def create_student():
         use_case = CreateStudentUseCase(_get_repository())
         use_case.execute(dto)
         flash("Estudiante creado con éxito.", "success")
-    except (StudentValidationError, DuplicateEmailError, ValueError) as e:
+    except (StudentValidationError, DuplicateEmailError, DuplicateDocumentoError, ValueError) as e:
         flash(f"Error al crear estudiante: {str(e)}", "error")
 
     return redirect(url_for("student_views.index"))
@@ -78,6 +85,7 @@ def create_student():
 @student_view_bp.route("/students/<int:student_id>/edit", methods=["POST"])
 def update_student(student_id: int):
     """Actualizar estudiante desde formulario web."""
+    documento = request.form.get("documento")
     nombres = request.form.get("nombres")
     apellidos = request.form.get("apellidos")
     edad_raw = request.form.get("edad")
@@ -89,6 +97,7 @@ def update_student(student_id: int):
         edad = int(edad_raw) if edad_raw else None
         dto = UpdateStudentDTO(
             id=student_id,
+            documento=documento,
             nombres=nombres,
             apellidos=apellidos,
             edad=edad,
@@ -99,7 +108,7 @@ def update_student(student_id: int):
         use_case = UpdateStudentUseCase(_get_repository())
         use_case.execute(dto)
         flash("Estudiante actualizado con éxito.", "success")
-    except (StudentValidationError, DuplicateEmailError, StudentNotFoundError, ValueError) as e:
+    except (StudentValidationError, DuplicateEmailError, DuplicateDocumentoError, StudentNotFoundError, ValueError) as e:
         flash(f"Error al actualizar estudiante: {str(e)}", "error")
 
     return redirect(url_for("student_views.index"))
