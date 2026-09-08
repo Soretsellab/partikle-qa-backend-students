@@ -144,35 +144,67 @@
         <!-- Pagination Bar -->
         <div class="border-t border-slate-200 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50">
             <div class="text-xs text-slate-500 font-medium">
-                Mostrando página <span class="font-semibold text-slate-800">{{ paginated.page }}</span> de <span class="font-semibold text-slate-800">{{ paginated.total_pages }}</span> (Total: <span class="font-semibold text-slate-800">{{ paginated.total }}</span> registros)
+                Mostrando página <span class="font-semibold text-slate-800">{{ paginated.page }}</span> de <span class="font-semibold text-slate-800">{{ paginated.total_pages }}</span> (Total: <span class="font-semibold text-slate-800">{{ paginated.total }}</span> estudiantes)
             </div>
 
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1.5 flex-wrap gap-y-2">
+                {# Primera página #}
                 {% if paginated.has_prev %}
+                    <a href="{{ url_for('student_views.index', page=1, search=search, status=status) }}" class="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition" title="Primera página">
+                        &laquo;
+                    </a>
                     <a href="{{ url_for('student_views.index', page=paginated.page - 1, search=search, status=status) }}" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">
                         &larr; Anterior
                     </a>
                 {% else %}
-                    <span class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
+                    <span class="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200" title="En la primera página">
+                        &laquo;
+                    </span>
+                    <span class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200">
                         &larr; Anterior
                     </span>
                 {% endif %}
 
-                {% for p in range(1, paginated.total_pages + 1) %}
+                {# Números de página con rango inteligente #}
+                {% set start_p = [1, paginated.page - 2]|max %}
+                {% set end_p = [paginated.total_pages, paginated.page + 2]|min %}
+
+                {% if start_p > 1 %}
+                    <a href="{{ url_for('student_views.index', page=1, search=search, status=status) }}" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">1</a>
+                    {% if start_p > 2 %}
+                        <span class="px-1.5 text-xs text-slate-400">...</span>
+                    {% endif %}
+                {% endif %}
+
+                {% for p in range(start_p, end_p + 1) %}
                     {% if p == paginated.page %}
-                        <span class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white">{{ p }}</span>
-                    {% elif p <= 3 or p >= paginated.total_pages - 1 or (p >= paginated.page - 1 and p <= paginated.page + 1) %}
+                        <span class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow-sm">{{ p }}</span>
+                    {% else %}
                         <a href="{{ url_for('student_views.index', page=p, search=search, status=status) }}" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">{{ p }}</a>
                     {% endif %}
                 {% endfor %}
 
+                {% if end_p < paginated.total_pages %}
+                    {% if end_p < paginated.total_pages - 1 %}
+                        <span class="px-1.5 text-xs text-slate-400">...</span>
+                    {% endif %}
+                    <a href="{{ url_for('student_views.index', page=paginated.total_pages, search=search, status=status) }}" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">{{ paginated.total_pages }}</a>
+                {% endif %}
+
+                {# Siguiente y última página #}
                 {% if paginated.has_next %}
                     <a href="{{ url_for('student_views.index', page=paginated.page + 1, search=search, status=status) }}" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">
                         Siguiente &rarr;
                     </a>
+                    <a href="{{ url_for('student_views.index', page=paginated.total_pages, search=search, status=status) }}" class="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition" title="Última página">
+                        &raquo;
+                    </a>
                 {% else %}
-                    <span class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
+                    <span class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200">
                         Siguiente &rarr;
+                    </span>
+                    <span class="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200" title="En la última página">
+                        &raquo;
                     </span>
                 {% endif %}
             </div>

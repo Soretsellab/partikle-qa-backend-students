@@ -58,6 +58,16 @@ class PaginatedStudentsDTO:
     per_page: int
     total_pages: int
 
+    @property
+    def has_prev(self) -> bool:
+        """Indica si existe una página previa."""
+        return self.page > 1
+
+    @property
+    def has_next(self) -> bool:
+        """Indica si existe una página posterior."""
+        return self.page < self.total_pages
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "items": [item.to_dict() for item in self.items],
@@ -65,6 +75,6 @@ class PaginatedStudentsDTO:
             "page": self.page,
             "per_page": self.per_page,
             "total_pages": self.total_pages,
-            "has_next": self.page < self.total_pages,
-            "has_prev": self.page > 1,
+            "has_next": self.has_next,
+            "has_prev": self.has_prev,
         }

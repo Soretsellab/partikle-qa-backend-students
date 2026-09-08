@@ -26,10 +26,10 @@ def _get_repository():
 def index():
     """Página principal con listado, buscador, filtros y paginación."""
     try:
-        page = int(request.args.get("page", 1))
-        per_page = int(request.args.get("per_page", 6))
+        page = max(1, int(request.args.get("page", 1)))
+        per_page = max(1, min(100, int(request.args.get("per_page", 10))))
     except ValueError:
-        page, per_page = 1, 6
+        page, per_page = 1, 10
 
     search = request.args.get("search", "").strip()
     status = request.args.get("status", "").strip()
